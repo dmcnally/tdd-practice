@@ -1,0 +1,36 @@
+version: '3.5'
+
+services:
+  web:
+    image: fizz-buzz-main
+    environment:
+      DATABASE_URL: 'postgres://postgres:@postgres:5432/fizz_buzz_development'
+      TEST_DATABASE_URL: 'postgres://postgres:@postgres:5432/fizz_buzz_test'
+      DEVELOPMENT_DATABASE_URL: 'postgres://postgres:@postgres:5432/fizz_buzz_development'
+      GEM_HOME: '/rubygems'
+      SECRET_KEY_BASE: 'f361de52d7ead927be073f656eac0f3a49318e3ab19faf0ccab10cfcc500929abb0c0d8ea4280f04a74654c05b5b0c721676f16d2c4b7c93855b2cc452152a2a'
+    command: bundle exec foreman start -f ./Procfile.dev -p 3000
+    build: .
+    volumes:
+      - .:/app
+      - rubygems_cache:/rubygems
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+    tty: true
+    stdin_open: true
+
+  postgres:
+    image: postgres:latest
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  db-data:
+  rubygems_cache:
+
+
+
